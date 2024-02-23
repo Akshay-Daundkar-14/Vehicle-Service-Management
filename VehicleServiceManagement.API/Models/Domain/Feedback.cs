@@ -12,6 +12,8 @@ namespace VehicleServiceManagement.API.Models.Domain
         [Required]
         public string Description { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         public DateTime Created_Date { get; set; }
         [ForeignKey("Customer")]
         public int CustomerId { get; set; }

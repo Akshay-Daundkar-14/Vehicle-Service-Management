@@ -9,6 +9,8 @@ namespace VehicleServiceManagement.API.Models.Domain
         [Key]
         public int ScheduledServiceId { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         [Required]
         public DateTime ScheduledDate { get; set; }
 

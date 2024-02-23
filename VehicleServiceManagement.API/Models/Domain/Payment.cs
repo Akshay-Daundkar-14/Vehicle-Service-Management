@@ -25,6 +25,8 @@ namespace VehicleServiceManagement.API.Models.Domain
         [StringLength(10)]
         public string CVV { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         [Required]
         public int CustomerID { get; set; }
         public Customer Customer { get; set; }

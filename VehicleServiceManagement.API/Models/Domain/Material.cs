@@ -17,6 +17,10 @@ namespace VehicleServiceManagement.API.Models.Domain
         public double Cost { get; set; }
 
 
+        public bool IsDeleted { get; set; } = false;
+
+
+
         [JsonIgnore]
         public ICollection<ServiceRecordItem>? ServiceRecordItems { get; set; } 
     }

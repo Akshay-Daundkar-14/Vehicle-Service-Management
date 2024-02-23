@@ -13,6 +13,8 @@ namespace VehicleServiceManagement.API.Models.Domain
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0.")] 
         public int Quantity { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         [ForeignKey("ServiceRecord")]
         public int? ServiceRecordID { get; set; }
         [JsonIgnore]
