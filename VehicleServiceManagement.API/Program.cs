@@ -22,6 +22,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IServiceRepresentativeRepository, ServiceRepresentativeRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 var app = builder.Build();
 
