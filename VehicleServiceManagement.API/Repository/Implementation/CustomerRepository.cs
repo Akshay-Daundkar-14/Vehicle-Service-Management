@@ -22,7 +22,8 @@ namespace VehicleServiceManagement.API.Repository.Implementation
 
         public async Task DeleteCustomerAsync(Customer customer)
         {
-            _appDbContext.Customers.Remove(customer);
+            customer.IsDeleted = true;
+            _appDbContext.Entry(customer).State = EntityState.Modified;
             await _appDbContext.SaveChangesAsync();
         }
 

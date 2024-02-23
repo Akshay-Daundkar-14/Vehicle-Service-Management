@@ -31,7 +31,7 @@ namespace VehicleServiceManagement.API.Models.Domain
         [StringLength(255)]
         public string Image { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }

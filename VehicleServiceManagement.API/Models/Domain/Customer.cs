@@ -30,13 +30,13 @@ namespace VehicleServiceManagement.API.Models.Domain
         public string Address { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d{10,15}$", ErrorMessage = "Mobile number must be between 10 to 15 digits.")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Please enter a valid 10-digit mobile number.")]
         public string Mobile { get; set; }
 
         [StringLength(255)]
         public string Image { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
