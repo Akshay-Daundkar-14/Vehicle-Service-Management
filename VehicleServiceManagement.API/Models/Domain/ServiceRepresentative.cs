@@ -16,12 +16,18 @@ namespace VehicleServiceManagement.API.Models.Domain
         public string LastName { get; set; }
 
         [StringLength(15)]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Please enter a valid 10-digit mobile number.")]
         public string ContactNumber { get; set; } 
 
         [Required]
         [EmailAddress]
         [StringLength(50)]
         public string Email { get; set; }
+
+
+        public bool IsDeleted { get; set; } = false;
+
+
         [JsonIgnore]
         public ICollection<ServiceRecord>? ServiceRecords { get; set; }
         [JsonIgnore]

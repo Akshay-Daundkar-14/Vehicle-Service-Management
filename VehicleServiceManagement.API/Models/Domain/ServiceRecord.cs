@@ -8,6 +8,9 @@ namespace VehicleServiceManagement.API.Models.Domain
     {
         [Key]
         public int ServiceRecordID { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
+
         public int RepresentativeID { get; set; }
         public ServiceRepresentative Representative { get; set; }
 
