@@ -17,19 +17,17 @@ namespace VehicleServiceManagement.API.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly ICustomerRepository _service;
 
-        public CustomersController(ApplicationDbContext context, ICustomerRepository service)
+        public CustomersController(ICustomerRepository service)
         {
-            _context = context;
             _service = service; 
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            var customerDomain = await _service.GetAllAsync();
+            var customerDomain = await _service.GetAllCustomerAsync();
             if (customerDomain == null)
             {
                 return NotFound();
@@ -58,13 +56,13 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<ActionResult<Customer>> GetCustomer([FromRoute] int id)
         {
-            if (_context.Customers == null)
+            if (_service.GetAllCustomerAsync == null || id <= 0)
             {
                 return NotFound();
             }
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _service.GetCustomerAsync(id);
 
             if (customer == null)
             {
@@ -74,25 +72,22 @@ namespace VehicleServiceManagement.API.Controllers
             return customer;
         }
 
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        public async Task<IActionResult> PutCustomer([FromRoute]int id, [FromBody]Customer customer)
         {
-            if (id != customer.CustomerId)
+            if (id != customer.CustomerId || customer == null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+              await  _service.UpdateCustomerAsync(customer);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
+                if (_service.GetCustomerAsync(id) ==null)
                 {
                     return NotFound();
                 }
@@ -105,44 +100,39 @@ namespace VehicleServiceManagement.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Customers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> PostCustomer([FromBody] Customer customer)
         {
-            if (_context.Customers == null)
+            if (_service.GetAllCustomerAsync == null || customer == null)
             {
                 return Problem("Entity set 'AppDbContext.Customers'  is null.");
             }
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+
+           await _service.CreateCustomerAsync(customer);
 
             return CreatedAtAction("GetCustomer", new { id = customer.CustomerId }, customer);
         }
 
-        // DELETE: api/Customers/5
+       
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public async Task<IActionResult> DeleteCustomer([FromRoute]int id)
         {
-            if (_context.Customers == null)
+            if (_service.GetAllCustomerAsync == null || id <=0)
             {
                 return NotFound();
             }
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _service.GetCustomerAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+           await _service.DeleteCustomerAsync(customer);
 
             return NoContent();
         }
 
-        private bool CustomerExists(int id)
-        {
-            return (_context.Customers?.Any(e => e.CustomerId == id)).GetValueOrDefault();
-        }
+       
     }
 }
