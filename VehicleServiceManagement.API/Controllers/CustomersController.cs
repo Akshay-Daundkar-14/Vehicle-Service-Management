@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleServiceManagement.API.Data;
 using VehicleServiceManagement.API.Models.Domain;
-using VehicleServiceManagement.API.Models.DTO;
 using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
@@ -27,32 +26,13 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            var customerDomain = await _service.GetAllCustomerAsync();
-            if (customerDomain == null)
+            var customer = await _service.GetAllCustomerAsync();
+            if (customer == null)
             {
                 return NotFound();
             }
 
-            var customerDto = new List<CustomerDTO>();
-
-            foreach (var customerDomains in customerDomain)
-            {
-                customerDto.Add(new CustomerDTO()
-                {
-                    CustomerId = customerDomains.CustomerId,
-                    FirstName = customerDomains.FirstName,
-                    LastName = customerDomains.LastName,
-                    Email = customerDomains.Email,
-                    Password = customerDomains.Password,
-                    Address = customerDomains.Address,
-                    Mobile = customerDomains.Mobile,
-                    Image = customerDomains.Image,
-                    IsDeleted = customerDomains.IsDeleted,
-                    CreatedDate = customerDomains.CreatedDate,
-                    UpdatedDate = customerDomains.UpdatedDate,
-                });
-            }
-            return Ok(customerDto);
+            return Ok(customer);
         }
 
         [HttpGet("{id}")]

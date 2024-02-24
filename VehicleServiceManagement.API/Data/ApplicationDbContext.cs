@@ -7,7 +7,7 @@ namespace VehicleServiceManagement.API.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public DbSet<Users> Users { get; set; } 
+        public DbSet<User> Users { get; set; } 
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Customer> Customers { get; set; }

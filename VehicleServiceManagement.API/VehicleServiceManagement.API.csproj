@@ -20,7 +20,6 @@
     <Folder Include="Helpers\" />
     <Folder Include="Content\" />
     <Folder Include="Models\Account\" />
-    <Folder Include="Models\DTO\" />
   </ItemGroup>
 
 </Project>

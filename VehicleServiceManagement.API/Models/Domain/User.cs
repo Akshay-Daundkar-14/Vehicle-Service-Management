@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace VehicleServiceManagement.API.Models.Domain
 {
-    public class Users
+    public class User
     {
         [Key]
         public int UserID { get; set; }
