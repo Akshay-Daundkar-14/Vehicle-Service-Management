@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleServiceManagement.API.Data;
 using VehicleServiceManagement.API.Models.Domain;
-using VehicleServiceManagement.API.Models.DTO;
 using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")] 
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class FeedbacksController : ControllerBase
     {
         private readonly IFeedbackRepository _service;
@@ -83,6 +83,7 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<Feedback>> PostFeedback([FromBody] Feedback feedback)
         {
             if (_service.GetAllFeedbackAsync == null || feedback == null)

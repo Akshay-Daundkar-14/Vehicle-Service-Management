@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VehicleServiceManagement.API.Data;
 using VehicleServiceManagement.API.Models.Domain;
-using VehicleServiceManagement.API.Models.DTO;
 using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers

@@ -14,6 +14,7 @@ namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")] 
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerRepository _service;
@@ -23,7 +24,7 @@ namespace VehicleServiceManagement.API.Controllers
             _service = service; 
         }
 
-        [HttpGet]
+        [HttpGet]        
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
             var customer = await _service.GetAllCustomerAsync();

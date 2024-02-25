@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VehicleServiceManagement.API.Models.Domain;
+using VehicleServiceManagement.API.Models.DTO;
+using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
@@ -8,14 +11,105 @@ namespace VehicleServiceManagement.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly ITokenRepository _tokenRepository;
+
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
+        {
+            _userManager = userManager;
+            _tokenRepository = tokenRepository;
+        }
+
         [HttpPost]
-        public string Login(User user)
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
 
+            // No Need to write logic to check whether the email is already register or not because identity internally checks it.
 
-            // Need to write a logic to validate user and then generate the token
+            var user = new IdentityUser()
+            {
+                 Email = request.Email?.Trim(),
+                 UserName = request.Email?.Trim(),
+            };
 
-            return "User Login Successfully";
+           var identityResult =  await _userManager.CreateAsync(user,request.Password);
+
+            if(identityResult.Succeeded)
+            {
+                // Add Role to user
+
+                identityResult = await _userManager.AddToRoleAsync(user, "Customer");
+
+                if (identityResult.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    if (identityResult.Errors.Any())
+                    {
+                        foreach (var error in identityResult.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (identityResult.Errors.Any())
+                {
+                    foreach (var error in identityResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+
+
+            return ValidationProblem(ModelState);
+        }
+
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] RegisterRequestDto request)
+        {
+            // Check Email 
+
+          var identityUser =  await _userManager.FindByEmailAsync(request.Email);
+
+            if(identityUser is not null)
+            {
+                bool isPasswordMatched = await _userManager.CheckPasswordAsync(identityUser, request.Password);
+
+                if (isPasswordMatched)
+                {
+                    // generate token & response
+
+
+                    var roles = await _userManager.GetRolesAsync(identityUser);
+                    var role = roles.ElementAtOrDefault(0);
+
+                   var jwtToken = _tokenRepository.CreateJwtToken(identityUser,role);
+
+                    var response = new LoginResponseDto()
+                    {
+                        Email = request.Email,
+                        Role = role,
+                        Token = jwtToken
+                    };
+
+                    return Ok(response);
+                }
+            }
+
+            ModelState.AddModelError("", "Email or Password Incorrect");
+
+            return ValidationProblem(ModelState);
+
         }
     }
 }
