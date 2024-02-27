@@ -80,6 +80,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+//------------------- Enable CORS -----------------
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.AllowAnyOrigin() 
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+//-------------------- Log4Net -----------------------
+#region log4net
+builder.Logging.ClearProviders();
+builder.Logging.AddLog4Net();
+#endregion log4net
+
 
 var app = builder.Build();
 
@@ -90,6 +109,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

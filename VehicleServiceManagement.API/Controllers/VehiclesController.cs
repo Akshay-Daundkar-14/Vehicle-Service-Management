@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,58 +19,57 @@ namespace VehicleServiceManagement.API.Controllers
     public class VehiclesController : ControllerBase
     {
         private readonly IVehicleRepository _service;
+        private readonly ILogger<VehiclesController> _logger;
 
-        public VehiclesController(IVehicleRepository service)
+        public VehiclesController(IVehicleRepository service, ILogger<VehiclesController> logger)
         {
-            _service = service; 
+            _service = service;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles()
         {
-            var vehicleDomain = await _service.GetAllVehicleAsync();
-            if (vehicleDomain == null)
+            try
             {
-                return NotFound();
+                var vehicleDomain = await _service.GetAllVehicleAsync();
+                if (vehicleDomain == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Vehicles\" retrieved successfully");
+                return Ok(vehicleDomain);
             }
-
-            //var VehicleDto = new List<VehicleDTO>();
-
-            //foreach (var VehicleDomains in VehicleDomain)
-            //{
-            //    VehicleDto.Add(new VehicleDTO()
-            //    {
-            //        VehicleId = VehicleDomains.VehicleId,
-            //        FirstName = VehicleDomains.FirstName,
-            //        LastName = VehicleDomains.LastName,
-            //        Email = VehicleDomains.Email,
-            //        Password = VehicleDomains.Password,
-            //        Address = VehicleDomains.Address,
-            //        Mobile = VehicleDomains.Mobile,
-            //        Image = VehicleDomains.Image,
-            //        IsDeleted = VehicleDomains.IsDeleted,
-            //        CreatedDate = VehicleDomains.CreatedDate,
-            //        UpdatedDate = VehicleDomains.UpdatedDate,
-            //    });
-            //}
-            return Ok(vehicleDomain);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving \"Vehicles\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Vehicle>> GetVehicle([FromRoute] int id)
         {
-            if (_service.GetAllVehicleAsync == null || id <= 0)
+            try
             {
-                return NotFound();
-            }
-            var vehicle = await _service.GetVehicleAsync(id);
+                if (_service.GetAllVehicleAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var vehicle = await _service.GetVehicleAsync(id);
 
-            if (vehicle == null)
+                if (vehicle == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Vehicle\" retrieved successfully with id -> {id}");
+                return vehicle;
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error retrieving \"Vehicle\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-            return vehicle;
         }
 
 
@@ -83,9 +83,10 @@ namespace VehicleServiceManagement.API.Controllers
 
             try
             {
-              await  _service.UpdateVehicleAsync(vehicle);
+                _logger.LogInformation($"\"Vehicle\" with Id --> {id} get updated successfully.");
+                await  _service.UpdateVehicleAsync(vehicle);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (_service.GetVehicleAsync(id) ==null)
                 {
@@ -93,7 +94,8 @@ namespace VehicleServiceManagement.API.Controllers
                 }
                 else
                 {
-                    throw;
+                    _logger.LogError($"Error updating \"vehicle\" with id -> {id}: {ex.Message}");
+                    return StatusCode(500, "Internal server server");
                 }
             }
 
@@ -104,33 +106,49 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Vehicle>> PostVehicle([FromBody] Vehicle vehicle)
         {
-            if (_service.GetAllVehicleAsync == null || vehicle == null)
+            try
             {
-                return Problem("Entity set 'AppDbContext.Vehicles'  is null.");
+                if (_service.GetAllVehicleAsync == null || vehicle == null)
+                {
+                    return Problem("Entity set 'AppDbContext.Vehicles'  is null.");
+                }
+                _logger.LogInformation($"\"Vehicle\" created successfully with id -> {vehicle.VehicleId}");
+                await _service.CreateVehicleAsync(vehicle);
+
+                return CreatedAtAction("GetVehicle", new { id = vehicle.VehicleId }, vehicle);
             }
-
-           await _service.CreateVehicleAsync(vehicle);
-
-            return CreatedAtAction("GetVehicle", new { id = vehicle.VehicleId }, vehicle);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Creating \"Vehicle\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehicle([FromRoute]int id)
         {
-            if (_service.GetAllVehicleAsync == null || id <=0)
+            try
             {
-                return NotFound();
+                if (_service.GetAllVehicleAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var vehicle = await _service.GetVehicleAsync(id);
+                if (vehicle == null)
+                {
+                    return NotFound();
+                }
+
+                await _service.DeleteVehicleAsync(vehicle);
+                _logger.LogInformation($"\"Vehicle\" deleted successfully with id -> {vehicle.VehicleId}");
+                return NoContent();
             }
-            var vehicle = await _service.GetVehicleAsync(id);
-            if (vehicle == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error deleting \"Vehicle\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-           await _service.DeleteVehicleAsync(vehicle);
-
-            return NoContent();
         }
 
        

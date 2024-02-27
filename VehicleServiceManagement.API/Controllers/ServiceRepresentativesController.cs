@@ -18,58 +18,57 @@ namespace VehicleServiceManagement.API.Controllers
     public class ServiceRepresentativesController : ControllerBase
     {
         private readonly IServiceRepresentativeRepository _service;
+        private readonly ILogger<ServiceRepresentativesController> _logger;
 
-        public ServiceRepresentativesController(IServiceRepresentativeRepository service)
+        public ServiceRepresentativesController(IServiceRepresentativeRepository service, ILogger<ServiceRepresentativesController> logger)
         {
-            _service = service; 
+            _service = service;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServiceRepresentative>>> GetServiceRepresentatives()
         {
-            var serviceRepresentativeDomain = await _service.GetAllServiceRepresentativeAsync();
-            if (serviceRepresentativeDomain == null)
+            try
             {
-                return NotFound();
+                var serviceRepresentativeDomain = await _service.GetAllServiceRepresentativeAsync();
+                if (serviceRepresentativeDomain == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Service Representative\" retrieved successfully");
+                return Ok(serviceRepresentativeDomain);
             }
-
-            //var ServiceRepresentativeDto = new List<ServiceRepresentativeDTO>();
-
-            //foreach (var ServiceRepresentativeDomains in ServiceRepresentativeDomain)
-            //{
-            //    ServiceRepresentativeDto.Add(new ServiceRepresentativeDTO()
-            //    {
-            //        ServiceRepresentativeId = ServiceRepresentativeDomains.ServiceRepresentativeId,
-            //        FirstName = ServiceRepresentativeDomains.FirstName,
-            //        LastName = ServiceRepresentativeDomains.LastName,
-            //        Email = ServiceRepresentativeDomains.Email,
-            //        Password = ServiceRepresentativeDomains.Password,
-            //        Address = ServiceRepresentativeDomains.Address,
-            //        Mobile = ServiceRepresentativeDomains.Mobile,
-            //        Image = ServiceRepresentativeDomains.Image,
-            //        IsDeleted = ServiceRepresentativeDomains.IsDeleted,
-            //        CreatedDate = ServiceRepresentativeDomains.CreatedDate,
-            //        UpdatedDate = ServiceRepresentativeDomains.UpdatedDate,
-            //    });
-            //}
-            return Ok(serviceRepresentativeDomain);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving \"Service Representative\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRepresentative>> GetServiceRepresentative([FromRoute] int id)
         {
-            if (_service.GetAllServiceRepresentativeAsync == null || id <= 0)
+            try
             {
-                return NotFound();
-            }
-            var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
+                if (_service.GetAllServiceRepresentativeAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
 
-            if (serviceRepresentative == null)
+                if (serviceRepresentative == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Service Representative\" retrieved successfully with id -> {id}");
+                return serviceRepresentative;
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error retrieving \"Service Representative\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-            return serviceRepresentative;
         }
 
 
@@ -84,8 +83,9 @@ namespace VehicleServiceManagement.API.Controllers
             try
             {
               await  _service.UpdateServiceRepresentativeAsync(serviceRepresentative);
+                _logger.LogInformation($"\"Service Representative\" with id -> {id} updated successfully.");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (_service.GetServiceRepresentativeAsync(id) ==null)
                 {
@@ -93,7 +93,8 @@ namespace VehicleServiceManagement.API.Controllers
                 }
                 else
                 {
-                    throw;
+                    _logger.LogError($"Error updating \"Service Representative\" with id -> {id}: {ex.Message}");
+                    return StatusCode(500, "Internal server server");
                 }
             }
 
@@ -104,33 +105,49 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceRepresentative>> PostServiceRepresentative([FromBody] ServiceRepresentative serviceRepresentative)
         {
-            if (_service.GetAllServiceRepresentativeAsync == null || serviceRepresentative == null)
+            try
             {
-                return Problem("Entity set 'AppDbContext.ServiceRepresentatives'  is null.");
+                if (_service.GetAllServiceRepresentativeAsync == null || serviceRepresentative == null)
+                {
+                    return Problem("Entity set 'AppDbContext.ServiceRepresentatives'  is null.");
+                }
+
+                await _service.CreateServiceRepresentativeAsync(serviceRepresentative);
+                _logger.LogInformation($"\"Service Representative\" created successfully with id -> {serviceRepresentative.RepresentativeID}");
+                return CreatedAtAction("GetServiceRepresentative", new { id = serviceRepresentative.RepresentativeID }, serviceRepresentative);
             }
-
-           await _service.CreateServiceRepresentativeAsync(serviceRepresentative);
-
-            return CreatedAtAction("GetServiceRepresentative", new { id = serviceRepresentative.RepresentativeID }, serviceRepresentative);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Creating \"Service Representative\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceRepresentative([FromRoute]int id)
         {
-            if (_service.GetAllServiceRepresentativeAsync == null || id <=0)
+            try
             {
-                return NotFound();
+                if (_service.GetAllServiceRepresentativeAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
+                if (serviceRepresentative == null)
+                {
+                    return NotFound();
+                }
+
+                await _service.DeleteServiceRepresentativeAsync(serviceRepresentative);
+                _logger.LogInformation($"\"Service Representative\" deleted successfully with id -> {serviceRepresentative.RepresentativeID}");
+                return NoContent();
             }
-            var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
-            if (serviceRepresentative == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error deleting \"Service Representative\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-           await _service.DeleteServiceRepresentativeAsync(serviceRepresentative);
-
-            return NoContent();
         }
 
        

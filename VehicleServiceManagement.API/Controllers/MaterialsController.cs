@@ -18,58 +18,57 @@ namespace VehicleServiceManagement.API.Controllers
     public class MaterialsController : ControllerBase
     {
         private readonly IMaterialRepository _service;
+        private readonly ILogger<MaterialsController> _logger;
 
-        public MaterialsController(IMaterialRepository service)
+        public MaterialsController(IMaterialRepository service, ILogger<MaterialsController> logger)
         {
-            _service = service; 
+            _service = service;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Material>>> GetMaterials()
         {
-            var materialDomain = await _service.GetAllMaterialAsync();
-            if (materialDomain == null)
+            try
             {
-                return NotFound();
+                var materialDomain = await _service.GetAllMaterialAsync();
+                if (materialDomain == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Material\" retrieved successfully");
+                return Ok(materialDomain);
             }
-
-            //var MaterialDto = new List<MaterialDTO>();
-
-            //foreach (var MaterialDomains in MaterialDomain)
-            //{
-            //    MaterialDto.Add(new MaterialDTO()
-            //    {
-            //        MaterialId = MaterialDomains.MaterialId,
-            //        FirstName = MaterialDomains.FirstName,
-            //        LastName = MaterialDomains.LastName,
-            //        Email = MaterialDomains.Email,
-            //        Password = MaterialDomains.Password,
-            //        Address = MaterialDomains.Address,
-            //        Mobile = MaterialDomains.Mobile,
-            //        Image = MaterialDomains.Image,
-            //        IsDeleted = MaterialDomains.IsDeleted,
-            //        CreatedDate = MaterialDomains.CreatedDate,
-            //        UpdatedDate = MaterialDomains.UpdatedDate,
-            //    });
-            //}
-            return Ok(materialDomain);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving \"Material\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Material>> GetMaterial([FromRoute] int id)
         {
-            if (_service.GetAllMaterialAsync == null || id <= 0)
+            try
             {
-                return NotFound();
-            }
-            var material = await _service.GetMaterialAsync(id);
+                if (_service.GetAllMaterialAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var material = await _service.GetMaterialAsync(id);
 
-            if (material == null)
+                if (material == null)
+                {
+                    return NotFound();
+                }
+                _logger.LogInformation($"\"Material\" retrieved successfully with id -> {id}");
+                return material;
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error retrieving \"Material\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-            return material;
         }
 
 
@@ -84,8 +83,9 @@ namespace VehicleServiceManagement.API.Controllers
             try
             {
               await  _service.UpdateMaterialAsync(material);
+                _logger.LogInformation($"\"Material\" with id -> {id} updated successfully.");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
                 if (_service.GetMaterialAsync(id) ==null)
                 {
@@ -93,7 +93,8 @@ namespace VehicleServiceManagement.API.Controllers
                 }
                 else
                 {
-                    throw;
+                    _logger.LogError($"Error updating \"Material\" with id -> {id}: {ex.Message}");
+                    return StatusCode(500, "Internal server server");
                 }
             }
 
@@ -104,33 +105,49 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Material>> PostMaterial([FromBody] Material material)
         {
-            if (_service.GetAllMaterialAsync == null || material == null)
+            try
             {
-                return Problem("Entity set 'AppDbContext.Materials'  is null.");
+                if (_service.GetAllMaterialAsync == null || material == null)
+                {
+                    return Problem("Entity set 'AppDbContext.Materials'  is null.");
+                }
+
+                await _service.CreateMaterialAsync(material);
+                _logger.LogInformation($"\"Material\" created successfully with id -> {material.ItemID}");
+                return CreatedAtAction("GetMaterial", new { id = material.ItemID }, material);
             }
-
-           await _service.CreateMaterialAsync(material);
-
-            return CreatedAtAction("GetMaterial", new { id = material.ItemID }, material);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Creating \"Material\": {ex.Message}");
+                return StatusCode(500, "Internal server server");
+            }
         }
 
        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterial([FromRoute]int id)
         {
-            if (_service.GetAllMaterialAsync == null || id <=0)
+            try
             {
-                return NotFound();
+                if (_service.GetAllMaterialAsync == null || id <= 0)
+                {
+                    return NotFound();
+                }
+                var material = await _service.GetMaterialAsync(id);
+                if (material == null)
+                {
+                    return NotFound();
+                }
+
+                await _service.DeleteMaterialAsync(material);
+                _logger.LogInformation($"\"Material\" deleted successfully with id -> {material.ItemID}");
+                return NoContent();
             }
-            var material = await _service.GetMaterialAsync(id);
-            if (material == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError($"Error deleting \"Material\" with id -> {id}: {ex.Message}");
+                return StatusCode(500, "Internal server server");
             }
-
-           await _service.DeleteMaterialAsync(material);
-
-            return NoContent();
         }
 
        
