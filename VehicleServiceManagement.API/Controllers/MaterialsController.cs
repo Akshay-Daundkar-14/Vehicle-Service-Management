@@ -96,7 +96,7 @@ namespace VehicleServiceManagement.API.Controllers
 
             if (id <= 0)
             {
-                return NotFound();
+                return BadRequest();
             }
             var material = await _service.GetMaterialAsync(id);
             if (material == null)

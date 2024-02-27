@@ -12,7 +12,7 @@ using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class ServiceRepresentativesController : ControllerBase
@@ -29,49 +29,49 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServiceRepresentative>>> GetServiceRepresentatives()
         {
-            
-                var serviceRepresentativeDomain = await _service.GetAllServiceRepresentativeAsync();
-                if (serviceRepresentativeDomain == null)
-                {
-                    return NotFound();
-                }
-                _logger.LogInformation($"\"Service Representative\" retrieved successfully");
-                return Ok(serviceRepresentativeDomain);
-            
+
+            var serviceRepresentativeDomain = await _service.GetAllServiceRepresentativeAsync();
+            if (serviceRepresentativeDomain == null)
+            {
+                return NotFound();
+            }
+            _logger.LogInformation($"\"Service Representative\" retrieved successfully");
+            return Ok(serviceRepresentativeDomain);
+
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRepresentative>> GetServiceRepresentative([FromRoute] int id)
         {
-            
-                if (id <= 0)
-                {
-                    return BadRequest();
-                }
-                var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
 
-                if (serviceRepresentative == null)
-                {
-                    return NotFound();
-                }
-                _logger.LogInformation($"\"Service Representative\" retrieved successfully with id -> {id}");
-                return serviceRepresentative;
-            
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
+
+            if (serviceRepresentative == null)
+            {
+                return NotFound();
+            }
+            _logger.LogInformation($"\"Service Representative\" retrieved successfully with id -> {id}");
+            return serviceRepresentative;
+
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutServiceRepresentative([FromRoute]int id, [FromBody]ServiceRepresentative serviceRepresentative)
+        public async Task<IActionResult> PutServiceRepresentative([FromRoute] int id, [FromBody] ServiceRepresentative serviceRepresentative)
         {
             if (id != serviceRepresentative.RepresentativeID || serviceRepresentative == null)
             {
                 return BadRequest();
             }
 
-            
-              await  _service.UpdateServiceRepresentativeAsync(serviceRepresentative);
-                _logger.LogInformation($"\"Service Representative\" with id -> {id} updated successfully.");
-         
+
+            await _service.UpdateServiceRepresentativeAsync(serviceRepresentative);
+            _logger.LogInformation($"\"Service Representative\" with id -> {id} updated successfully.");
+
 
             return NoContent();
         }
@@ -80,39 +80,39 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceRepresentative>> PostServiceRepresentative([FromBody] ServiceRepresentative serviceRepresentative)
         {
-           
-                if (serviceRepresentative == null)
-                {
-                    return Problem("Entity set 'AppDbContext.ServiceRepresentatives'  is null.");
-                }
 
-                await _service.CreateServiceRepresentativeAsync(serviceRepresentative);
-                _logger.LogInformation($"\"Service Representative\" created successfully with id -> {serviceRepresentative.RepresentativeID}");
-                return CreatedAtAction("GetServiceRepresentative", new { id = serviceRepresentative.RepresentativeID }, serviceRepresentative);
-            
+            if (serviceRepresentative == null)
+            {
+                return Problem("Entity set 'AppDbContext.ServiceRepresentatives'  is null.");
+            }
+
+            await _service.CreateServiceRepresentativeAsync(serviceRepresentative);
+            _logger.LogInformation($"\"Service Representative\" created successfully with id -> {serviceRepresentative.RepresentativeID}");
+            return CreatedAtAction("GetServiceRepresentative", new { id = serviceRepresentative.RepresentativeID }, serviceRepresentative);
+
         }
 
-       
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteServiceRepresentative([FromRoute]int id)
+        public async Task<IActionResult> DeleteServiceRepresentative([FromRoute] int id)
         {
-            
-                if (id <= 0)
-                {
-                    return NotFound();
-                }
-                var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
-                if (serviceRepresentative == null)
-                {
-                    return NotFound();
-                }
 
-                await _service.DeleteServiceRepresentativeAsync(serviceRepresentative);
-                _logger.LogInformation($"\"Service Representative\" deleted successfully with id -> {serviceRepresentative.RepresentativeID}");
-                return NoContent();
-            
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+            var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
+            if (serviceRepresentative == null)
+            {
+                return NotFound();
+            }
+
+            await _service.DeleteServiceRepresentativeAsync(serviceRepresentative);
+            _logger.LogInformation($"\"Service Representative\" deleted successfully with id -> {serviceRepresentative.RepresentativeID}");
+            return NoContent();
+
         }
 
-       
+
     }
 }

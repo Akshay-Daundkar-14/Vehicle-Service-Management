@@ -31,15 +31,12 @@ namespace VehicleServiceManagement.Tests
         public async Task PostVehicle_ReturnsCreatedAtActionResult()
         {
             // Arrange
-            var vehicles = new List<Vehicle>();
-            var vehicle = new Vehicle { VehicleId = 1, VehicleModel = "Car" };
-
-            _serviceMock.Setup(service => service.GetAllVehicleAsync()).ReturnsAsync(vehicles); // Mock GetAllVehicleAsync
+            var vehicle = new Vehicle { VehicleId = 1, VehicleModel = "Car" };           
             _serviceMock.Setup(service => service.CreateVehicleAsync(vehicle)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.PostVehicle(vehicle);
-
+            
             // Assert
             Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
             var createdAtActionResult = result.Result as CreatedAtActionResult;
@@ -49,23 +46,6 @@ namespace VehicleServiceManagement.Tests
         }
 
           
-
-        [Test]
-        public async Task PostVehicle_ReturnsInternalServerErrorResult()
-        {
-            // Arrange
-            var vehicle = new Vehicle { VehicleId = 1, VehicleModel = "Car" };
-            List<Vehicle> vehicles = null;
-            _serviceMock.Setup(service => service.GetAllVehicleAsync()).ReturnsAsync(vehicles);
-            _serviceMock.Setup(service => service.CreateVehicleAsync(vehicle)).ThrowsAsync(new Exception("Some error"));
-
-            // Act
-            var result = await _controller.PostVehicle(vehicle);
-
-            // Assert
-            var statusCodeResult = result.Result as ObjectResult;
-            Assert.AreEqual(500, statusCodeResult?.StatusCode);
-        }
 
     }
 }

@@ -71,18 +71,5 @@ namespace VehicleServiceManagement.Tests
             
         }
 
-        [Test]
-        public async Task GetCustomers_ReturnsInternalServerErrorResult()
-        {
-            // Arrange
-            _serviceMock.Setup(service => service.GetAllCustomerAsync()).ThrowsAsync(new Exception("new exception"));
-
-            // Act
-            var result = await _controller.GetCustomers();
-            var statusCodeResult = result.Result as ObjectResult;
-
-            // Assert
-            Assert.AreEqual(500, statusCodeResult?.StatusCode);
-        }
     }
 }

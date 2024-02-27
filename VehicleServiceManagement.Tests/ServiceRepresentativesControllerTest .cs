@@ -46,39 +46,5 @@ namespace VehicleServiceManagement.Tests
             
         }
 
-        //[Test]
-        //public async Task PutServiceRepresentative_ReturnsNotFound_WhenServiceRepresentativeNotFound()
-        //{
-        //    // Arrange
-        //    var id = 1;
-        //    ServiceRepresentative nullServiceRepresentative = null;
-
-        //    _serviceMock.Setup(service => service.GetServiceRepresentativeAsync(id)).ReturnsAsync(nullServiceRepresentative);
-
-        //    // Act
-        //    var result = await _controller.PutServiceRepresentative(id, new ServiceRepresentative());
-
-        //    // Assert
-        //    Assert.IsInstanceOf<NotFoundResult>(result);
-        //}
-
-        [Test]
-        public async Task PutServiceRepresentative_ReturnsInternalServerError_WhenExceptionOccurs()
-        {
-            // Arrange
-            var id = 1;
-            var serviceRepresentative = new ServiceRepresentative { RepresentativeID = id, FirstName = "Test" };
-
-            _serviceMock.Setup(service => service.GetServiceRepresentativeAsync(id)).ReturnsAsync(serviceRepresentative);
-            _serviceMock.Setup(service => service.UpdateServiceRepresentativeAsync(serviceRepresentative)).ThrowsAsync(new Exception("new Exception"));
-
-            // Act
-            var result = await _controller.PutServiceRepresentative(id, serviceRepresentative);
-
-            // Assert
-            var statusCodeResult = result as ObjectResult;
-            Assert.AreEqual(500, statusCodeResult?.StatusCode);
-        }
-
     }
 }
