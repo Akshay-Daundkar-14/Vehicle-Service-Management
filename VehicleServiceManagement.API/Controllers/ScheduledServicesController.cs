@@ -39,7 +39,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ScheduledService>> GetScheduledService([FromRoute] int id)
         {
-            if (_service.GetAllScheduledServiceAsync == null || id <= 0)
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -62,22 +62,8 @@ namespace VehicleServiceManagement.API.Controllers
                 return BadRequest();
             }
 
-            try
-            {
               await  _service.UpdateScheduledServiceAsync(scheduledServiceDomain);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (_service.GetScheduledServiceAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            
             return NoContent();
         }
 
@@ -85,7 +71,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ScheduledService>> PostScheduledService([FromBody] ScheduledService scheduledServiceDomain)
         {
-            if (_service.GetAllScheduledServiceAsync == null || scheduledServiceDomain == null)
+            if (scheduledServiceDomain == null)
             {
                 return Problem("Entity set 'AppDbContext.ScheduledServices'  is null.");
             }
@@ -99,7 +85,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteScheduledService([FromRoute]int id)
         {
-            if (_service.GetAllScheduledServiceAsync == null || id <=0)
+            if (id <=0)
             {
                 return NotFound();
             }

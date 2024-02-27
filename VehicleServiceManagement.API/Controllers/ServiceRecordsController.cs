@@ -38,7 +38,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRecord>> GetServiceRecord([FromRoute] int id)
         {
-            if (_service.GetAllServiceRecordAsync == null || id <= 0)
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -61,21 +61,9 @@ namespace VehicleServiceManagement.API.Controllers
                 return BadRequest();
             }
 
-            try
-            {
+            
               await  _service.UpdateServiceRecordAsync(serviceRecord);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (_service.GetServiceRecordAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
 
             return NoContent();
         }
@@ -84,7 +72,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceRecord>> PostServiceRecord([FromBody] ServiceRecord serviceRecord)
         {
-            if (_service.GetAllServiceRecordAsync == null || serviceRecord == null)
+            if (serviceRecord == null)
             {
                 return Problem("Entity set 'AppDbContext.ServiceRecords'  is null.");
             }
@@ -98,9 +86,9 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceRecord([FromRoute]int id)
         {
-            if (_service.GetAllServiceRecordAsync == null || id <=0)
+            if (id <=0)
             {
-                return NotFound();
+                return BadRequest();
             }
             var serviceRecord = await _service.GetServiceRecordAsync(id);
             if (serviceRecord == null)

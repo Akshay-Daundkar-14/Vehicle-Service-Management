@@ -12,7 +12,7 @@ using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     [ApiController]
     public class ServiceRecordItemsController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace VehicleServiceManagement.API.Controllers
 
         public ServiceRecordItemsController(IServiceRecordItemRepository service)
         {
-            _service = service; 
+            _service = service;
         }
 
         [HttpGet]
@@ -38,7 +38,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRecordItem>> GetServiceRecordItem([FromRoute] int id)
         {
-            if (_service.GetAllServiceRecordItemAsync == null || id <= 0)
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -54,28 +54,14 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutServiceRecordItem([FromRoute]int id, [FromBody]ServiceRecordItem serviceRecordItem)
+        public async Task<IActionResult> PutServiceRecordItem([FromRoute] int id, [FromBody] ServiceRecordItem serviceRecordItem)
         {
             if (id != serviceRecordItem.ServiceRecordItemId || serviceRecordItem == null)
             {
                 return BadRequest();
             }
 
-            try
-            {
-              await  _service.UpdateServiceRecordItemAsync(serviceRecordItem);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (_service.GetServiceRecordItemAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _service.UpdateServiceRecordItemAsync(serviceRecordItem);
 
             return NoContent();
         }
@@ -84,23 +70,23 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceRecordItem>> PostServiceRecordItem([FromBody] ServiceRecordItem serviceRecordItem)
         {
-            if (_service.GetAllServiceRecordItemAsync == null || serviceRecordItem == null)
+            if (serviceRecordItem == null)
             {
                 return Problem("Entity set 'AppDbContext.ServiceRecordItems'  is null.");
             }
 
-           await _service.CreateServiceRecordItemAsync(serviceRecordItem);
+            await _service.CreateServiceRecordItemAsync(serviceRecordItem);
 
             return CreatedAtAction("GetServiceRecordItem", new { id = serviceRecordItem.ServiceRecordItemId }, serviceRecordItem);
         }
 
-       
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteServiceRecordItem([FromRoute]int id)
+        public async Task<IActionResult> DeleteServiceRecordItem([FromRoute] int id)
         {
-            if (_service.GetAllServiceRecordItemAsync == null || id <=0)
+            if (id <= 0)
             {
-                return NotFound();
+                return BadRequest();
             }
             var serviceRecordItem = await _service.GetServiceRecordItemAsync(id);
             if (serviceRecordItem == null)
@@ -108,11 +94,11 @@ namespace VehicleServiceManagement.API.Controllers
                 return NotFound();
             }
 
-           await _service.DeleteServiceRecordItemAsync(serviceRecordItem);
+            await _service.DeleteServiceRecordItemAsync(serviceRecordItem);
 
             return NoContent();
         }
 
-       
+
     }
 }

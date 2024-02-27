@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="Content\" />
     <Folder Include="Logs\" />
     <Folder Include="Models\Account\" />

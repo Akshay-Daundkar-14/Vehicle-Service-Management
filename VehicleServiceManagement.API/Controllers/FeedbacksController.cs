@@ -12,7 +12,7 @@ using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class FeedbacksController : ControllerBase
@@ -21,7 +21,7 @@ namespace VehicleServiceManagement.API.Controllers
 
         public FeedbacksController(IFeedbackRepository service)
         {
-            _service = service; 
+            _service = service;
         }
 
         [HttpGet]
@@ -32,14 +32,14 @@ namespace VehicleServiceManagement.API.Controllers
             {
                 return NotFound();
             }
-           
+
             return Ok(feedbackDomain);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Feedback>> GetFeedback([FromRoute] int id)
         {
-            if (_service.GetAllFeedbackAsync == null || id <= 0)
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -55,28 +55,15 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFeedback([FromRoute]int id, [FromBody]Feedback feedback)
+        public async Task<IActionResult> PutFeedback([FromRoute] int id, [FromBody] Feedback feedback)
         {
             if (id != feedback.FeedbackId || feedback == null)
             {
                 return BadRequest();
             }
 
-            try
-            {
-              await  _service.UpdateFeedbackAsync(feedback);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (_service.GetFeedbackAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _service.UpdateFeedbackAsync(feedback);
+
 
             return NoContent();
         }
@@ -86,21 +73,21 @@ namespace VehicleServiceManagement.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Feedback>> PostFeedback([FromBody] Feedback feedback)
         {
-            if (_service.GetAllFeedbackAsync == null || feedback == null)
+            if (feedback == null)
             {
                 return Problem("Entity set 'AppDbContext.Feedbacks'  is null.");
             }
 
-           await _service.CreateFeedbackAsync(feedback);
+            await _service.CreateFeedbackAsync(feedback);
 
             return CreatedAtAction("GetFeedback", new { id = feedback.FeedbackId }, feedback);
         }
 
-       
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFeedback([FromRoute]int id)
+        public async Task<IActionResult> DeleteFeedback([FromRoute] int id)
         {
-            if (_service.GetAllFeedbackAsync == null || id <=0)
+            if (id <= 0)
             {
                 return NotFound();
             }
@@ -110,11 +97,11 @@ namespace VehicleServiceManagement.API.Controllers
                 return NotFound();
             }
 
-           await _service.DeleteFeedbackAsync(feedback);
+            await _service.DeleteFeedbackAsync(feedback);
 
             return NoContent();
         }
 
-       
+
     }
 }

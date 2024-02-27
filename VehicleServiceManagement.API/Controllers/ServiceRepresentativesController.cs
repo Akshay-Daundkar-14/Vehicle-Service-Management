@@ -29,8 +29,7 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServiceRepresentative>>> GetServiceRepresentatives()
         {
-            try
-            {
+            
                 var serviceRepresentativeDomain = await _service.GetAllServiceRepresentativeAsync();
                 if (serviceRepresentativeDomain == null)
                 {
@@ -38,22 +37,16 @@ namespace VehicleServiceManagement.API.Controllers
                 }
                 _logger.LogInformation($"\"Service Representative\" retrieved successfully");
                 return Ok(serviceRepresentativeDomain);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error retrieving \"Service Representative\": {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRepresentative>> GetServiceRepresentative([FromRoute] int id)
         {
-            try
-            {
-                if (_service.GetAllServiceRepresentativeAsync == null || id <= 0)
+            
+                if (id <= 0)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
                 var serviceRepresentative = await _service.GetServiceRepresentativeAsync(id);
 
@@ -63,12 +56,7 @@ namespace VehicleServiceManagement.API.Controllers
                 }
                 _logger.LogInformation($"\"Service Representative\" retrieved successfully with id -> {id}");
                 return serviceRepresentative;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error retrieving \"Service Representative\" with id -> {id}: {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            
         }
 
 
@@ -80,23 +68,10 @@ namespace VehicleServiceManagement.API.Controllers
                 return BadRequest();
             }
 
-            try
-            {
+            
               await  _service.UpdateServiceRepresentativeAsync(serviceRepresentative);
                 _logger.LogInformation($"\"Service Representative\" with id -> {id} updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                if (_service.GetServiceRepresentativeAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    _logger.LogError($"Error updating \"Service Representative\" with id -> {id}: {ex.Message}");
-                    return StatusCode(500, "Internal server server");
-                }
-            }
+         
 
             return NoContent();
         }
@@ -105,9 +80,8 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceRepresentative>> PostServiceRepresentative([FromBody] ServiceRepresentative serviceRepresentative)
         {
-            try
-            {
-                if (_service.GetAllServiceRepresentativeAsync == null || serviceRepresentative == null)
+           
+                if (serviceRepresentative == null)
                 {
                     return Problem("Entity set 'AppDbContext.ServiceRepresentatives'  is null.");
                 }
@@ -115,21 +89,15 @@ namespace VehicleServiceManagement.API.Controllers
                 await _service.CreateServiceRepresentativeAsync(serviceRepresentative);
                 _logger.LogInformation($"\"Service Representative\" created successfully with id -> {serviceRepresentative.RepresentativeID}");
                 return CreatedAtAction("GetServiceRepresentative", new { id = serviceRepresentative.RepresentativeID }, serviceRepresentative);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Creating \"Service Representative\": {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            
         }
 
        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceRepresentative([FromRoute]int id)
         {
-            try
-            {
-                if (_service.GetAllServiceRepresentativeAsync == null || id <= 0)
+            
+                if (id <= 0)
                 {
                     return NotFound();
                 }
@@ -142,12 +110,7 @@ namespace VehicleServiceManagement.API.Controllers
                 await _service.DeleteServiceRepresentativeAsync(serviceRepresentative);
                 _logger.LogInformation($"\"Service Representative\" deleted successfully with id -> {serviceRepresentative.RepresentativeID}");
                 return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error deleting \"Service Representative\" with id -> {id}: {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            
         }
 
        
