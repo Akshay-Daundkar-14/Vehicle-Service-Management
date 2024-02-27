@@ -17,5 +17,7 @@ namespace VehicleServiceManagement.API.Data
         public DbSet<ServiceRecord> ServiceRecords { get; set; }
         public DbSet<ServiceRecordItem> ServiceRecordItems { get; set; }
         public DbSet<ScheduledService> ScheduledServices { get; set; }
+
+        public DbSet<Error> Errors { get; set; }
     }
 }

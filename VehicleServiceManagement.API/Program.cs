@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using VehicleServiceManagement.API.Data;
+using VehicleServiceManagement.API.Helpers.CustomMiddleware;
 using VehicleServiceManagement.API.Models.Domain;
 using VehicleServiceManagement.API.Repository.Implementation;
 using VehicleServiceManagement.API.Repository.Interface;
@@ -39,6 +40,7 @@ builder.Services.AddScoped<IScheduledServiceRepository, ScheduledServiceReposito
 builder.Services.AddScoped<IServiceRecordItemRepository, ServiceRecordItemRepository>();
 builder.Services.AddScoped<IServiceRecordRepository, ServiceRecordRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IServerErrorRepository, ServerErrorRepository>();
 
 
 //------------- 
@@ -114,7 +116,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();

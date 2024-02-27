@@ -30,8 +30,7 @@ namespace VehicleServiceManagement.API.Controllers
 
             // No Need to write logic to check whether the email is already register or not because identity internally checks it.
 
-            try
-            {
+            
                 var user = new IdentityUser()
                 {
                     Email = request.Email?.Trim(),
@@ -73,12 +72,7 @@ namespace VehicleServiceManagement.API.Controllers
                     }
                 }
                 return ValidationProblem(ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Registering User : {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }  
+            
         }
 
 
@@ -88,8 +82,7 @@ namespace VehicleServiceManagement.API.Controllers
         {
             // Check Email 
 
-            try
-            {
+            
                 var identityUser = await _userManager.FindByEmailAsync(request.Email);
 
                 if (identityUser is not null)
@@ -120,12 +113,7 @@ namespace VehicleServiceManagement.API.Controllers
                 ModelState.AddModelError("", "Email or Password Incorrect");
 
                 return ValidationProblem(ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error while login user: {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+
 
         }
     }

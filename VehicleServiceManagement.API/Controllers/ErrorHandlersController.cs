@@ -6,10 +6,10 @@ namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ErrorHandlersController : ControllerBase
+    public class ErrorHandlersController : ControllerBase // This controller will track all the angular errors
     {
         [HttpPost]
-        public string LogError(ErrorHandler errorHandler)
+        public string LogError(Error errorHandler)
         {
 
 

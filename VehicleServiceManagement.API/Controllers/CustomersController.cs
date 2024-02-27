@@ -12,9 +12,9 @@ using VehicleServiceManagement.API.Repository.Interface;
 
 namespace VehicleServiceManagement.API.Controllers
 {
-    [Route("api/[controller]")] 
+    [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerRepository _service;
@@ -26,7 +26,7 @@ namespace VehicleServiceManagement.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]        
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
 
@@ -41,82 +41,47 @@ namespace VehicleServiceManagement.API.Controllers
 
             //------------------------ Logging Error Message --------------
 
-
-            try
+            var customer = await _service.GetAllCustomerAsync();
+            if (customer == null)
             {
-                var customer = await _service.GetAllCustomerAsync();
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-                _logger.LogInformation($"\"Customers\" retrieved successfully");
-
-                return Ok(customer);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error retrieving \"Customers\": {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
-            
+
+            _logger.LogInformation($"\"Customers\" retrieved successfully");
+
+            return Ok(customer);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer([FromRoute] int id)
         {
-            try
+            if (id <= 0)
             {
-                if (_service.GetAllCustomerAsync == null || id <= 0)
-                {
-                    return NotFound();
-                }
-                var customer = await _service.GetCustomerAsync(id);
-
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-                _logger.LogInformation($"\"Customer\" retrieved successfully with id -> {id}");
-
-                return customer;
+                return BadRequest();
             }
-            catch (Exception ex)
+            var customer = await _service.GetCustomerAsync(id);
+
+            if (customer == null)
             {
-                _logger.LogError($"Error retrieving \"Customer\" with id -> {id}: {ex.Message}");
-                return StatusCode(500, "Internal server server");
+                return NotFound();
             }
 
+            _logger.LogInformation($"\"Customer\" retrieved successfully with id -> {id}");
+
+            return customer;
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer([FromRoute]int id, [FromBody]Customer customer)
+        public async Task<IActionResult> PutCustomer([FromRoute] int id, [FromBody] Customer customer)
         {
             if (id != customer.CustomerId || customer == null)
             {
                 return BadRequest();
             }
 
-            try
-            {
-              await  _service.UpdateCustomerAsync(customer);
-               _logger.LogInformation($"\"Customer\" with id -> {id} updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                if (_service.GetCustomerAsync(id) ==null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    _logger.LogError($"Error updating \"Customer\" with id -> {id}: {ex.Message}");
-                    return StatusCode(500, "Internal server server");
-                }
-            }
-
+            await _service.UpdateCustomerAsync(customer);
+            _logger.LogInformation($"\"Customer\" with id -> {id} updated successfully.");
             return NoContent();
         }
 
@@ -124,51 +89,33 @@ namespace VehicleServiceManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer([FromBody] Customer customer)
         {
-            try
+            if (customer == null)
             {
-                if (_service.GetAllCustomerAsync == null || customer == null)
-                {
-                    return Problem("Entity set 'AppDbContext.Customers'  is null.");
-                }
+                return Problem("Entity set 'AppDbContext.Customers'  is null.");
+            }
 
-                await _service.CreateCustomerAsync(customer);
-                _logger.LogInformation($"\"Customer\" created successfully with id -> {customer.CustomerId}");
-                return CreatedAtAction("GetCustomer", new { id = customer.CustomerId }, customer);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Creating \"Customer\": {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            await _service.CreateCustomerAsync(customer);
+            _logger.LogInformation($"\"Customer\" created successfully with id -> {customer.CustomerId}");
+            return CreatedAtAction("GetCustomer", new { id = customer.CustomerId }, customer);
         }
 
-       
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer([FromRoute]int id)
+        public async Task<IActionResult> DeleteCustomer([FromRoute] int id)
         {
-            try
+            if (id <= 0)
             {
-                if (_service.GetAllCustomerAsync == null || id <= 0)
-                {
-                    return NotFound();
-                }
-                var customer = await _service.GetCustomerAsync(id);
-                if (customer == null)
-                {
-                    return NotFound();
-                }
+                return BadRequest();
+            }
+            var customer = await _service.GetCustomerAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
 
-                await _service.DeleteCustomerAsync(customer);
-                _logger.LogInformation($"\"Customer\" deleted successfully with id -> {customer.CustomerId}");
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error deleting \"Customer\" with id -> {id}: {ex.Message}");
-                return StatusCode(500, "Internal server server");
-            }
+            await _service.DeleteCustomerAsync(customer);
+            _logger.LogInformation($"\"Customer\" deleted successfully with id -> {customer.CustomerId}");
+            return NoContent();
         }
-
-       
     }
 }
