@@ -8,6 +8,8 @@ namespace VehicleServiceManagement.API.Repository.Interface
 
         public Task<ServiceRepresentative> GetServiceRepresentativeAsync(int id);
 
+        public Task<ServiceRepresentative> GetServiceRepresentativeByEmailAsync(string email);
+
 
         public Task CreateServiceRepresentativeAsync(ServiceRepresentative serviceRepresentative);
 

@@ -39,6 +39,12 @@ namespace VehicleServiceManagement.API.Repository.Implementation
             return serviceRepresentative;
         }
 
+        public async Task<ServiceRepresentative> GetServiceRepresentativeByEmailAsync(string email)
+        {
+            var serviceRepresentative = await _appDbContext.ServiceRepresentatives.FirstOrDefaultAsync(s => s.Email == email);
+            return serviceRepresentative;
+        }
+
         public async Task UpdateServiceRepresentativeAsync(ServiceRepresentative serviceRepresentative)
         {
             _appDbContext.Entry(serviceRepresentative).State = EntityState.Modified;
