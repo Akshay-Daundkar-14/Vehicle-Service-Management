@@ -29,7 +29,7 @@ namespace VehicleServiceManagement.API.Repository.Implementation
 
         public async Task<List<Material>> GetAllMaterialAsync()
         {
-            var result = await _appDbContext.Materials.ToListAsync();
+            var result = await _appDbContext.Materials.Where(m=>m.IsDeleted==false).ToListAsync();
             return result;
         }
 

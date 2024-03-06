@@ -39,6 +39,12 @@ namespace VehicleServiceManagement.API.Repository.Implementation
             return serviceRecord;
         }
 
+        public Task<ServiceRecord> GetServiceRecordByVehicleIdAsync(int vehicleId)
+        {
+            var serviceRecord = _appDbContext.ServiceRecords.FirstOrDefaultAsync(s => s.VehicleID == vehicleId);
+            return serviceRecord;
+        }
+
         public async Task UpdateServiceRecordAsync(ServiceRecord serviceRecord)
         {
             _appDbContext.Entry(serviceRecord).State = EntityState.Modified;

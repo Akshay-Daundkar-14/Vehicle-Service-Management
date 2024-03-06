@@ -14,8 +14,7 @@ using VehicleServiceManagement.API.Repository.Interface;
 namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(Roles = "Admin")]
+    [ApiController]    
     public class VehiclesController : ControllerBase
     {
         private readonly IVehicleRepository _service;
@@ -28,6 +27,8 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "Service Advisor")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles()
         {
 
@@ -41,6 +42,8 @@ namespace VehicleServiceManagement.API.Controllers
 
         }
 
+        
+        //[Authorize(Roles = "Service Advisor")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Vehicle>> GetVehicle([FromRoute] int id)
         {
@@ -60,7 +63,9 @@ namespace VehicleServiceManagement.API.Controllers
 
         }
 
+        
 
+       // [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVehicle([FromRoute] int id, [FromBody] Vehicle vehicle)
         {
@@ -68,6 +73,9 @@ namespace VehicleServiceManagement.API.Controllers
             {
                 return BadRequest();
             }
+
+            vehicle.IsDeleted = false;
+            vehicle.UpdatedDate = DateTime.Now;            
 
 
             _logger.LogInformation($"\"Vehicle\" with Id --> {id} get updated successfully.");
@@ -77,7 +85,7 @@ namespace VehicleServiceManagement.API.Controllers
             return NoContent();
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Vehicle>> PostVehicle([FromBody] Vehicle vehicle)
         {
@@ -86,14 +94,17 @@ namespace VehicleServiceManagement.API.Controllers
             {
                 return Problem("Entity set 'AppDbContext.Vehicles'  is null.");
             }
-            _logger.LogInformation($"\"Vehicle\" created successfully with id -> {vehicle.VehicleId}");
+            vehicle.IsDeleted = false;
+            vehicle.CreatedDate = DateTime.Now;
+            vehicle.VehicleStatus = "Pending";
             await _service.CreateVehicleAsync(vehicle);
+            _logger.LogInformation($"\"Vehicle\" created successfully with id -> {vehicle.VehicleId}");
 
             return CreatedAtAction("GetVehicle", new { id = vehicle.VehicleId }, vehicle);
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehicle([FromRoute] int id)
         {

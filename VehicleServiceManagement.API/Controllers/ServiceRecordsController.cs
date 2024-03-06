@@ -14,6 +14,7 @@ namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")] 
     [ApiController]
+   
     public class ServiceRecordsController : ControllerBase
     {
         private readonly IServiceRecordRepository _service;
@@ -24,6 +25,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<ServiceRecord>>> GetServiceRecords()
         {
             var serviceRecord = await _service.GetAllServiceRecordAsync();
@@ -36,6 +38,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceRecord>> GetServiceRecord([FromRoute] int id)
         {
             if (id <= 0)
@@ -54,6 +57,7 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutServiceRecord([FromRoute]int id, [FromBody]ServiceRecord serviceRecord)
         {
             if (id != serviceRecord.ServiceRecordID || serviceRecord == null)
@@ -70,13 +74,15 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Service Advisor")]
         public async Task<ActionResult<ServiceRecord>> PostServiceRecord([FromBody] ServiceRecord serviceRecord)
         {
             if (serviceRecord == null)
             {
                 return Problem("Entity set 'AppDbContext.ServiceRecords'  is null.");
             }
-
+            serviceRecord.IsDeleted = false;
+            serviceRecord.ServiceDate = DateTime.Now;
            await _service.CreateServiceRecordAsync(serviceRecord);
 
             return CreatedAtAction("GetServiceRecord", new { id = serviceRecord.ServiceRecordID }, serviceRecord);
@@ -84,6 +90,7 @@ namespace VehicleServiceManagement.API.Controllers
 
        
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteServiceRecord([FromRoute]int id)
         {
             if (id <=0)

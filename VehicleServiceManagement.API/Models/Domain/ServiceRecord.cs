@@ -11,8 +11,11 @@ namespace VehicleServiceManagement.API.Models.Domain
 
         public bool IsDeleted { get; set; } = false;
 
+        [ForeignKey("Representative")]
         public int RepresentativeID { get; set; }
-        public ServiceRepresentative Representative { get; set; }
+
+        [JsonIgnore]
+        public ServiceRepresentative? Representative { get; set; }
 
         [Required]
         public DateTime ServiceDate { get; set; }

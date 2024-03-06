@@ -14,7 +14,7 @@ namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    
     public class MaterialsController : ControllerBase
     {
         private readonly IMaterialRepository _service;
@@ -38,6 +38,8 @@ namespace VehicleServiceManagement.API.Controllers
             return Ok(materialDomain);
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Material>> GetMaterial([FromRoute] int id)
         {
@@ -58,6 +60,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMaterial([FromRoute] int id, [FromBody] Material material)
         {
@@ -74,6 +77,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Material>> PostMaterial([FromBody] Material material)
         {
@@ -89,7 +93,7 @@ namespace VehicleServiceManagement.API.Controllers
 
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMaterial([FromRoute] int id)
         {

@@ -10,8 +10,17 @@ namespace VehicleServiceManagement.API.Models.Domain
         public int ServiceRecordItemId { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0.")] 
-        public int Quantity { get; set; }
+        [Range(1, double.MaxValue, ErrorMessage = "Quantity must be greater than 0.")] 
+        public double Quantity { get; set; }
+
+        [Required]
+        [Range(1, double.MaxValue, ErrorMessage = "Quantity must be greater than 0.")]
+        public double Price { get; set; }
+
+
+        [Required]
+        [Range(1, double.MaxValue, ErrorMessage = "Quantity must be greater than 0.")]
+        public double Total { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 

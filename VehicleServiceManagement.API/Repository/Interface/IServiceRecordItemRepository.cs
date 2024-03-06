@@ -15,5 +15,7 @@ namespace VehicleServiceManagement.API.Repository.Interface
 
 
         public Task DeleteServiceRecordItemAsync(ServiceRecordItem serviceRecordItem);
+
+        public Task<List<ServiceRecordItem>> GetAllServiceRecordItemByServiceRecordAsync(int id);
     }
 }

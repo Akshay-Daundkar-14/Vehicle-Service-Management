@@ -8,6 +8,8 @@ namespace VehicleServiceManagement.API.Repository.Interface
 
         public Task<ServiceRecord> GetServiceRecordAsync(int id);
 
+        public Task<ServiceRecord> GetServiceRecordByVehicleIdAsync(int vehicleId);
+
 
         public Task CreateServiceRecordAsync(ServiceRecord serviceRecord);
 

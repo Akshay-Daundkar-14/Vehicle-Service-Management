@@ -33,6 +33,12 @@ namespace VehicleServiceManagement.API.Repository.Implementation
             return result;
         }
 
+        public async Task<List<ServiceRecordItem>> GetAllServiceRecordItemByServiceRecordAsync(int id)
+        {
+            var result = await _appDbContext.ServiceRecordItems.Where(s => s.ServiceRecordID == id).ToListAsync();
+            return result;
+        }
+
         public async Task<ServiceRecordItem> GetServiceRecordItemAsync(int id)
         {
             var serviceRecordItem = await _appDbContext.ServiceRecordItems.FindAsync(id);

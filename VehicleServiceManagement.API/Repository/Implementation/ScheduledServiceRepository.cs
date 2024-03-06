@@ -33,6 +33,12 @@ namespace VehicleServiceManagement.API.Repository.Implementation
             return result;
         }
 
+        public async Task<List<ScheduledService>> GetAllScheduledServiceAsync(int serviceRepresentativeId)
+        {
+            var result = await _appDbContext.ScheduledServices.Where(s=>s.ServiceAdvisorID == serviceRepresentativeId).ToListAsync();
+            return result;
+        }
+
         public async Task<ScheduledService> GetScheduledServiceAsync(int id)
         {
             var scheduledService = await _appDbContext.ScheduledServices.FindAsync(id);

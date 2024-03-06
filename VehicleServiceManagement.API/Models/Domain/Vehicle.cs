@@ -28,13 +28,17 @@ namespace VehicleServiceManagement.API.Models.Domain
         [StringLength(255)]
         public string VehicleBrand { get; set; }
 
+       
         [StringLength(255)]
-        public string Image { get; set; }
+        public string? VehicleStatus { get; set; }
+
+        [StringLength(255)]
+        public string? Image { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
         public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
         [JsonIgnore]
         public ICollection<ServiceRecord>? ServiceRecords { get; set; }

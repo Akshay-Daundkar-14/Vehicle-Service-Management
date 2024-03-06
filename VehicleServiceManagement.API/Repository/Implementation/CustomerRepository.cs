@@ -29,7 +29,7 @@ namespace VehicleServiceManagement.API.Repository.Implementation
 
         public async Task<List<Customer>> GetAllCustomerAsync()
         {
-            var result = await _appDbContext.Customers.ToListAsync();
+            var result = await _appDbContext.Customers.Where(c=>c.IsDeleted==false).ToListAsync();
             return result;
         }
 

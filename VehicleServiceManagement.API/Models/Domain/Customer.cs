@@ -21,9 +21,9 @@ namespace VehicleServiceManagement.API.Models.Domain
         [StringLength(255)]
         public string Email { get; set; }
 
-        [Required]
+         
         [StringLength(255, MinimumLength = 6)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -34,12 +34,12 @@ namespace VehicleServiceManagement.API.Models.Domain
         public string Mobile { get; set; }
 
         [StringLength(255)]
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
         public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
         [JsonIgnore]
         public ICollection<ServiceRecord>? ServiceRecords { get; set; }
         [JsonIgnore]

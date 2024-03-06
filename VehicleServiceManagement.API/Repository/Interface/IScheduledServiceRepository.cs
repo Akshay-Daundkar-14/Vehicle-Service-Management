@@ -15,5 +15,8 @@ namespace VehicleServiceManagement.API.Repository.Interface
 
 
         public Task DeleteScheduledServiceAsync(ScheduledService ScheduledService);
+
+        public Task<List<ScheduledService>> GetAllScheduledServiceAsync(int serviceRepresentativeId);
+
     }
 }

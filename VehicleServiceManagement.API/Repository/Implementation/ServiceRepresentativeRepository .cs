@@ -29,7 +29,7 @@ namespace VehicleServiceManagement.API.Repository.Implementation
 
         public async Task<List<ServiceRepresentative>> GetAllServiceRepresentativeAsync()
         {
-            var result = await _appDbContext.ServiceRepresentatives.ToListAsync();
+            var result = await _appDbContext.ServiceRepresentatives.Where(s=>s.IsDeleted==false).ToListAsync();
             return result;
         }
 

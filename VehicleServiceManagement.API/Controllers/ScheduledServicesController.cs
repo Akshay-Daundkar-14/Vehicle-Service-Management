@@ -15,6 +15,7 @@ namespace VehicleServiceManagement.API.Controllers
     [Route("api/[controller]")] 
     [ApiController]
     //[Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Service Advisor")]
     public class ScheduledServicesController : ControllerBase
     {
         private readonly IScheduledServiceRepository _service;
@@ -34,10 +35,23 @@ namespace VehicleServiceManagement.API.Controllers
             }
 
             return Ok(scheduledServiceDomain);
+            }
+
+         [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<ScheduledService>>> GetScheduledServicesByAdvisorId([FromRoute] int id)
+        {
+            var scheduledServiceDomain = await _service.GetAllScheduledServiceAsync(id);
+            if (scheduledServiceDomain == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(scheduledServiceDomain);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ScheduledService>> GetScheduledService([FromRoute] int id)
+        [HttpGet]
+        [Route("GetScheduledServiceV1")]
+        public async Task<ActionResult<ScheduledService>> GetScheduledService([FromQuery] int id)
         {
             if (id <= 0)
             {
@@ -75,7 +89,8 @@ namespace VehicleServiceManagement.API.Controllers
             {
                 return Problem("Entity set 'AppDbContext.ScheduledServices'  is null.");
             }
-
+            scheduledServiceDomain.IsDeleted = false;
+            //scheduledServiceDomain.ScheduledDate = DateTime.Now;
            await _service.CreateScheduledServiceAsync(scheduledServiceDomain);
 
             return CreatedAtAction("GetScheduledService", new { id = scheduledServiceDomain.ScheduledServiceId }, scheduledServiceDomain);

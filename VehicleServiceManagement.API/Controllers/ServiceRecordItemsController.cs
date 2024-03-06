@@ -14,6 +14,7 @@ namespace VehicleServiceManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class ServiceRecordItemsController : ControllerBase
     {
         private readonly IServiceRecordItemRepository _service;
@@ -24,6 +25,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<ServiceRecordItem>>> GetServiceRecordItems()
         {
             var serviceRecordItem = await _service.GetAllServiceRecordItemAsync();
@@ -36,6 +38,7 @@ namespace VehicleServiceManagement.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceRecordItem>> GetServiceRecordItem([FromRoute] int id)
         {
             if (id <= 0)
@@ -54,6 +57,7 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutServiceRecordItem([FromRoute] int id, [FromBody] ServiceRecordItem serviceRecordItem)
         {
             if (id != serviceRecordItem.ServiceRecordItemId || serviceRecordItem == null)
@@ -68,6 +72,7 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Service Advisor")]
         public async Task<ActionResult<ServiceRecordItem>> PostServiceRecordItem([FromBody] ServiceRecordItem serviceRecordItem)
         {
             if (serviceRecordItem == null)
@@ -82,6 +87,7 @@ namespace VehicleServiceManagement.API.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteServiceRecordItem([FromRoute] int id)
         {
             if (id <= 0)
